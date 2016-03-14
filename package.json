@@ -1,26 +1,23 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.1.5",
-  "description": "A sample Node.js app using Express 4",
+  "name": "smashup",
+  "version": "0.1.0",
+  "description": "A website to play and extend the Smash Up game",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "ejs": "2.3.3",
-    "express": "4.13.3"
+    "ejs": "0.8.8",
+    "express": "3.0.6",
+    "pg": "4.5.1",
+    "socket.io": "0.9.17",
+    "underscore": "1.5.2"
   },
   "engines": {
-    "node": "0.12.7"
+    "node": "5.8.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
+    "url": "https://github.com/rohinmshah/smashup"
+  }
 }

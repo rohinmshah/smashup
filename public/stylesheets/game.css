@@ -1,0 +1,28 @@
+.grid-container {
+    display: table;
+    background-color: #eeeeee
+    border: 4px solid #303030;
+    overflow: hidden;
+    width: 100%
+}
+
+.grid-row {
+    display: table-row;
+    width: 100%;
+    clear: both;
+}
+
+.grid-cell {
+    width: 106.25px;
+    height: 106.25px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    float: left;
+    border-radius: 3px;
+    background: rgba(100, 100, 100, 0.35);
+}
+
+.grid-cell:last-child {
+    display: block;
+    margin-right: 0;
+}

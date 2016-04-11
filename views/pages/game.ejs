@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<% include ../partials/header.ejs %>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/game.css" />
+    </head>
+
+    <body>
+
+	<% include ../partials/nav.ejs %>
+
+	<div class="container">
+	    <div class="row">
+		<div class="col-md-9" id="game">
+		    <div class="grid-row">
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+		    </div>
+		    <div class="grid-row">
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+		    </div>
+		    <div class="grid-row">
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+		    </div>
+		    <div class="grid-row">
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+			<div class="grid-cell">
+			</div>
+		    </div>
+		</div>
+
+
+		<div class="col-md-3">
+		    <b>Users</b>
+		    <hr />
+		    <div id="users"></div>
+		    <hr class="visible-xs visible-sm"/>
+		    <input class="col-md-12 col-sm-12" id="data" placeholder="Send message as TODO: username" />
+		    <hr/>
+		    <div id="conversation"></div>
+		</div>
+	    </div>
+
+	    <script>
+	     function escaped(s) {
+		 return $("<div></div>").html(s).html();
+	     }
+
+	     var socket = io.connect('/');
+
+	     function disableUsername() {
+		 $('#data').unbind('keypress');
+	     }
+
+	     function enableUsername() {
+		 // when the client hits ENTER on their keyboard
+		 $('#data').keypress(function(e) {
+		     if(e.which == 13) {
+			 var username = $('#data').val();
+			 $('#data').val('');
+			 disableUsername();
+			 // tell server to execute 'adduser' and send along one parameter
+			 socket.emit('adduser', username);
+		     }
+		 });
+	     };
+
+	     function enableSendchat() {
+		 // when the client hits ENTER on their keyboard
+		 $('#data').keypress(function(e) {
+		     if(e.which == 13) {
+			 var message = $('#data').val();
+			 $('#data').val('');
+			 socket.emit('sendchat', message);
+		     }
+		 });
+	     }
+
+	     function enableGamePlay() {
+		 $('.grid-cell').each(function(index) {
+		     $(this).click(function(e) {
+			 // TODO: Try using non-dictionary data
+			 socket.emit('play', { index: index });
+		     });
+		 });
+	     }
+
+	     // listener, whenever the server emits 'updatechat', this
+	     // updates the chat body
+	     socket.on('updatechat', function (username, data) {
+		 $('#conversation').append('<b>'+ escaped(username) + ':</b> ' + escaped(data) + "<br/>");
+	     });
+
+
+	     socket.on('updategame', function (username, data) {
+		 var bgcolor = $('#game').css("background-color");
+		 var cell = $('.grid-cell')[data.index];
+		 $(cell).css("background-color", bgcolor);
+		 $(cell).unbind('click');
+	     });
+
+	     // listener, whenever the server emits 'updateusers', this updates the username list
+	     socket.on('updateusers', function(data) {
+		 $('#users').empty();
+		 $.each(data, function(key, value) {
+		     $('#users').append('<div>' + key + '</div>');
+		 });
+	     });
+
+	     socket.on('servernotification', function (data) {
+		 if(data.connected) {
+		     if(data.to_self) {
+			 $('#data').attr('placeholder', 'Send message as ' + data.username);
+			 data.username = "you";
+			 enableSendchat();
+			 enableGamePlay();
+		     }
+
+		     $('#conversation').append('connected: ' + escaped(data.username) + "<br/>");
+		 } else {
+		     $('#conversation').append('disconnected: ' + escaped(data.username) + "<br/>");
+		 }
+	     });
+
+	     // on load of page
+	     $(enableUsername);
+	    </script>
+
+	</div>
+    </body>
+</html>

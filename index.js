@@ -3,6 +3,12 @@ var app = express();
 var _ = require('underscore');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
+var passport = require('passport');
+
+var methodOverride = require('method-override');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var nodes = {};
 var usernames = {};
 var board = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
@@ -19,15 +25,16 @@ app.set('view options', { layout: false });
 // Note: Since we add public first, we are assuming that these files
 // are returned without any of the other middleware running, I think
 app.use(express.static(__dirname + '/public'));
-app.use(express.methodOverride());
-app.use(express.json());
-app.use(express.urlencoded());
+app.use(methodOverride());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+app.use(session({ secret: process.env.SESSION_SECRET }));
 
-app.use(app.router);
-
-app.get('/', function(request, response) {
-    response.render('pages/index');
-});
+require('./config/passport.js')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+require('./app/routes.js')(app, passport);
 
 function enableChat(socket) {
     socket.on('sendchat', function (data) {
@@ -48,6 +55,7 @@ function enablePlay(socket) {
 };
 
 io.sockets.on('connection', function(socket) {
+    enablePlay(socket);
     socket.emit('updateusers', usernames);
 
     socket.on('adduser', function(username) {
@@ -63,7 +71,6 @@ io.sockets.on('connection', function(socket) {
         io.sockets.emit('updateusers', usernames);
 
         enableChat(socket);
-	enablePlay(socket);
     });
 
     // when the user disconnects.. perform this

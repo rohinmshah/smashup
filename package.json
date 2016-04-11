@@ -7,14 +7,20 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "ejs": "0.8.8",
-    "express": "3.0.6",
-    "pg": "4.5.1",
-    "socket.io": "0.9.17",
-    "underscore": "1.5.2"
+    "body-parser": "~1.15.0",
+    "cookie-parser": "~1.4.1",
+    "ejs": "~0.8.8",
+    "express": "~4.13.4",
+    "express-session": "~1.13.0",
+    "method-override": "~2.3.5",
+    "passport": "~0.3.2",
+    "passport-facebook": "~2.1.0",
+    "pg": "~4.5.1",
+    "socket.io": "~0.9.17",
+    "underscore": "~1.5.2"
   },
   "engines": {
-    "node": "5.8.0"
+    "node": "~5.8.0"
   },
   "repository": {
     "type": "git",

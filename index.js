@@ -44,9 +44,8 @@ function enableChat(socket) {
 
 function enablePlay(socket) {
     socket.on('play', function (data) {
-	console.log('Received play message with data ' + data);
+	console.log('Received play message with index ' + data.index);
 	if (board[data.index]) {
-	    console.log('Passed if check');
 	    board[data.index] = false;
 	    io.sockets.emit('updategame', socket.username, data);
 	    io.sockets.emit('sendchat', socket.username, 'Removed box ' + data.index)
@@ -57,6 +56,7 @@ function enablePlay(socket) {
 io.sockets.on('connection', function(socket) {
     enablePlay(socket);
     socket.emit('updateusers', usernames);
+    socket.emit('gamestate', board);
 
     socket.on('adduser', function(username) {
         socket.username = username;

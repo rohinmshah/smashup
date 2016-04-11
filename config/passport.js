@@ -15,7 +15,7 @@ module.exports = function(passport) {
         clientSecret    : process.env.FB_CLIENT_SECRET,
         callbackURL     : process.env.FB_CALLBACK_URL
     }, function (token, refreshToken, profile, done) {
-	return done(null, profile.id);
+	return done(null, profile);
     }));
 
 }

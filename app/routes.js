@@ -14,7 +14,7 @@ module.exports = function(app, passport) {
     });
 
     app.get('/game', isLoggedIn, function(request, response) {
-	response.render('pages/game');
+	response.render('pages/game', { username : request.user.displayName });
     });
 
     // route for facebook authentication and login

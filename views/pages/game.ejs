@@ -60,7 +60,7 @@
 		    <hr />
 		    <div id="users"></div>
 		    <hr class="visible-xs visible-sm"/>
-		    <input class="col-md-12 col-sm-12" id="data" placeholder="Send message as TODO: username" />
+		    <input class="col-md-12 col-sm-12" id="data" placeholder="Send message as <%= username %>" />
 		    <hr/>
 		    <div id="conversation"></div>
 		</div>
@@ -73,10 +73,6 @@
 
 	     var socket = io.connect('/');
 
-	     function disableUsername() {
-		 $('#data').unbind('keypress');
-	     }
-
 	     function enableUsername() {
 		 // when the client hits ENTER on their keyboard
 		 $('#data').keypress(function(e) {
@@ -85,7 +81,6 @@
 			 $('#data').val('');
 			 disableUsername();
 			 // tell server to execute 'adduser' and send along one parameter
-			 socket.emit('adduser', username);
 		     }
 		 });
 	     };
@@ -102,11 +97,14 @@
 	     }
 
 	     function enableGamePlay() {
+		 var color = $('#game').css("background-color");
 		 $('.grid-cell').each(function(index) {
-		     $(this).click(function(e) {
-			 // TODO: Try using non-dictionary data
-			 socket.emit('play', { index: index });
-		     });
+		     if ($(this).css("background-color") !== color) {
+			 $(this).click(function(e) {
+			     // TODO: Try using non-dictionary data
+			     socket.emit('play', { index: index });
+			 });
+		     }
 		 });
 	     }
 
@@ -116,6 +114,16 @@
 		 $('#conversation').append('<b>'+ escaped(username) + ':</b> ' + escaped(data) + "<br/>");
 	     });
 
+	     socket.on('gamestate', function (board) {
+		 var cells = $('.grid-cell');
+		 for (var i = 0; i < board.length; i++) {
+		     if (!board[i]) {
+			 var bgcolor = $('#game').css("background-color");
+			 $(cells[i]).css("background-color", bgcolor);
+			 $(cells[i]).unbind('click');
+		     }
+		 }
+	     });
 
 	     socket.on('updategame', function (username, data) {
 		 var bgcolor = $('#game').css("background-color");
@@ -148,7 +156,9 @@
 	     });
 
 	     // on load of page
-	     $(enableUsername);
+	     $(function () {
+		 socket.emit('adduser', '<%= username %>');
+	     });
 	    </script>
 
 	</div>
